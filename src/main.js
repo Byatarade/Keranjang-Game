@@ -7,6 +7,12 @@ const sizes={
 
 const speedDown=150
 
+const gameStartDiv = document.querySelector("#gameStartDiv")
+const gameStartBtn = document.querySelector("#gameStartBtn")
+const gameEndDiv = document.querySelector("#gameEndDiv")
+const gameWinLoseSpan = document.querySelector("#gameWinLoseSpan")
+const gameEndScoreSpan = document.querySelector("#gameEndScoreSpan")
+
 class GameScene extends Phaser.Scene{
     constructor(){
         super("scene-game");
@@ -21,19 +27,22 @@ class GameScene extends Phaser.Scene{
         this.remainingTime;
         this.coinMusic;
         this.bgMusic;
+        this.emitter;
     }
     preload(){
         this.load.image("bg","/assets/bg.png");
         this.load.image("basket","/assets/basket.png");
         this.load.image("apple","/assets/apple.png");
+        this.load.image("money","/assets/money.png");
         this.load.audio("coin","/assets/coin.mp3");
         this.load.audio("bgMusic","/assets/bgMusic.mp3");
     }
     create(){
+        this.scene.pause("scene-game");
         this.coinMusic = this.sound.add("coin");
         this.bgMusic = this.sound.add("bgMusic");
         this.bgMusic.play()
-        this.bgMusic.stop()
+        // this.bgMusic.stop()
 
         this.add.image(0,0,"bg").setOrigin(0,0);
         this.player=this.physics.add
@@ -54,14 +63,22 @@ class GameScene extends Phaser.Scene{
         this.cursor=this.input.keyboard.createCursorKeys();
 
         this.textScore=this.add.text(sizes.width - 120,10,"Score: 0",{
-            fontsize:"20px Arial",
-            fill:"#fffff",
+            fontSize:"20px Arial",
+            fill:"#ffffff",
         });
         this.textTime=this.add.text(10,10,"Remaining Time: 00",{
-            fontsize:"20px Arial",
-            fill:"#fffff",
+            fontSize:"20px Arial",
+            fill:"#ffffff",
         });
-        this.timedEvent=this.time.delayedCall(3000,this.gameOver,[],this);
+        this.timedEvent=this.time.delayedCall(30000,this.gameOver,[],this);
+        this.emitter=this.add.particles(0,0 ,"money",{
+            speed:100,
+            gravityY:speedDown-200,
+            scale:0.04,
+            duration:100,
+            emitting:false
+        })
+        this.emitter.startFollow(this.player,this.player.width/2,this.player.height/2),true;
     }
     update(){
         this.remainingTime=this.timedEvent.getRemainingSeconds()
@@ -85,13 +102,21 @@ class GameScene extends Phaser.Scene{
     }
     targetHit(){
         this.coinMusic.play()
+        this.emitter.start()
         this.target.setY(0);
         this.target.setX(this.getRandomX());
         this.points++;
         this.textScore.setText(`Score: ${this.points}`);
     }
     gameOver(){
-        console.log("Game Over");
+        this.sys.game.destroy(true);
+        if(this.points >= 10){
+            gameEndScoreSpan.textContent=this.points
+            gameWinLoseSpan.textContent="You Win!"
+        }else{
+            gameWinLoseSpan.textContent="You Lose!"
+        }
+        gameEndDiv.style.display="flex";
     }
 }
 
@@ -110,3 +135,8 @@ const config = {
     scene:[GameScene]
 }
 const game = new Phaser.Game(config);
+
+gameStartBtn.addEventListener("click",()=>{
+    gameStartDiv.style.display="none";
+    game.scene.resume("scene-game");
+})
