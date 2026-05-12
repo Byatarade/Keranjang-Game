@@ -65,8 +65,8 @@ class GameScene extends Phaser.Scene{
             .image(0,0,"apple")
             .setOrigin(0,0);
         this.target.setMaxVelocity(0,speedDown);
-        this.target.body.enable=false;
-        this.physics.add.overlap(this.target,this.player,this.targetHit,null,this);
+        this.physics.world.disable(this.target);
+        this.physics.add.overlap(this.target,this.player,this.targetHit,this.appleCatchAllowed,this);
         this.cursor=this.input.keyboard.createCursorKeys();
 
         const bindTouch=(down,el)=>{
@@ -107,13 +107,20 @@ class GameScene extends Phaser.Scene{
     }
     spawnAppleAtTop(){
         this.target.setPosition(this.getRandomX(),0);
+        this.physics.world.enableBody(this.target);
         const b=this.target.body;
         if(b){
-            b.enable=true;
             b.allowGravity=true;
             b.setVelocity(0,0);
             b.setAcceleration(0,0);
         }
+    }
+    appleCatchAllowed(){
+        if(!this.playing)return false;
+        const tb=this.target.body;
+        const pb=this.player.body;
+        if(!tb||!pb||!tb.enable)return false;
+        return tb.bottom>=pb.top-4;
     }
     update(){
         if(this.playing&&this.timedEvent){
@@ -175,10 +182,13 @@ const config = {
 }
 const game = new Phaser.Game(config);
 
-gameStartBtn.addEventListener("click",()=>{
+const startGame=()=>{
+    if(gameStartDiv.style.display==="none")return;
     gameStartDiv.style.display="none";
     const scene=game.scene.getScene("scene-game");
     if(scene&&typeof scene.beginPlay==="function"){
         scene.beginPlay();
     }
-})
+};
+gameStartBtn.addEventListener("click",startGame);
+gameStartBtn.addEventListener("touchend",startGame,{passive:true});
