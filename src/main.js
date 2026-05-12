@@ -33,6 +33,8 @@ class GameScene extends Phaser.Scene{
         this.emitter;
         this.touchLeft=false;
         this.touchRight=false;
+        /** Avoid scene.pause/resume — on some mobile browsers arcade physics does not resume gravity reliably after refresh. */
+        this.playing=false;
     }
     preload(){
         this.load.image("bg","/assets/bg.png");
@@ -43,7 +45,6 @@ class GameScene extends Phaser.Scene{
         this.load.audio("bgMusic","/assets/bgMusic.mp3");
     }
     create(){
-        this.scene.pause("scene-game");
         this.coinMusic = this.sound.add("coin");
         this.bgMusic = this.sound.add("bgMusic");
         this.bgMusic.play()
@@ -64,6 +65,7 @@ class GameScene extends Phaser.Scene{
             .image(0,0,"apple")
             .setOrigin(0,0);
         this.target.setMaxVelocity(0,speedDown);
+        this.target.body.enable=false;
         this.physics.add.overlap(this.target,this.player,this.targetHit,null,this);
         this.cursor=this.input.keyboard.createCursorKeys();
 
@@ -84,11 +86,10 @@ class GameScene extends Phaser.Scene{
             fontSize:"20px Arial",
             fill:"#ffffff",
         });
-        this.textTime=this.add.text(10,10,"Remaining Time: 00",{
+        this.textTime=this.add.text(10,10,"Remaining Time: 30",{
             fontSize:"20px Arial",
             fill:"#ffffff",
         });
-        this.timedEvent=this.time.delayedCall(30000,this.gameOver,[],this);
         this.emitter=this.add.particles(0,0 ,"money",{
             speed:100,
             gravityY:speedDown-200,
@@ -96,14 +97,33 @@ class GameScene extends Phaser.Scene{
             duration:100,
             emitting:false
         })
-        this.emitter.startFollow(this.player,this.player.width/2,this.player.height/2),true;
+        this.emitter.startFollow(this.player,this.player.width/2,this.player.height/2);
+    }
+    beginPlay(){
+        if(this.playing)return;
+        this.playing=true;
+        this.timedEvent=this.time.delayedCall(30000,this.gameOver,[],this);
+        this.spawnAppleAtTop();
+    }
+    spawnAppleAtTop(){
+        this.target.setPosition(this.getRandomX(),0);
+        const b=this.target.body;
+        if(b){
+            b.enable=true;
+            b.allowGravity=true;
+            b.setVelocity(0,0);
+            b.setAcceleration(0,0);
+        }
     }
     update(){
-        this.remainingTime=this.timedEvent.getRemainingSeconds()
-        this.textTime.setText(`Remaining Time: ${Math.round(this.remainingTime).toString()}`);
+        if(this.playing&&this.timedEvent){
+            this.remainingTime=this.timedEvent.getRemainingSeconds();
+            this.textTime.setText(`Remaining Time: ${Math.round(this.remainingTime).toString()}`);
+        }
+        if(!this.playing)return;
+
         if (this.target.y >= sizes.height){
-            this.target.setY(0);
-            this.target.setX(this.getRandomX());
+            this.spawnAppleAtTop();
         }
 
         const left=this.cursor.left.isDown||this.touchLeft;
@@ -120,10 +140,10 @@ class GameScene extends Phaser.Scene{
         return Math.floor(Math.random()*480);
     }
     targetHit(){
+        if(!this.playing)return;
         this.coinMusic.play()
         this.emitter.start()
-        this.target.setY(0);
-        this.target.setX(this.getRandomX());
+        this.spawnAppleAtTop();
         this.points++;
         this.textScore.setText(`Score: ${this.points}`);
     }
@@ -157,5 +177,8 @@ const game = new Phaser.Game(config);
 
 gameStartBtn.addEventListener("click",()=>{
     gameStartDiv.style.display="none";
-    game.scene.resume("scene-game");
+    const scene=game.scene.getScene("scene-game");
+    if(scene&&typeof scene.beginPlay==="function"){
+        scene.beginPlay();
+    }
 })
