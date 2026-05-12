@@ -11,6 +11,7 @@
       <p>Keranjang Apel</p>
     </header>
     <main>
+      <div class="game-wrap">
       <canvas id="gameCanvas"></canvas>
       <div id="gameStartDiv" class="gameUI">
         <h1>Keranjang Apel</h1>
@@ -22,6 +23,11 @@
         <h1>You <span id="gameWinLoseSpan"></span></h1>
         <h1>Final Score: <span id="gameEndScoreSpan"></span></h1>
         <p>Refresh the page to play again.</p>
+      </div>
+      </div>
+      <div id="touchControls" class="touch-controls" aria-label="Kontrol gerak">
+        <button type="button" id="touchBtnLeft" class="touch-btn" aria-label="Kiri">◀</button>
+        <button type="button" id="touchBtnRight" class="touch-btn" aria-label="Kanan">▶</button>
       </div>
     </main>
     <footer>

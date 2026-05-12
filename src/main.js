@@ -1,5 +1,5 @@
 import './style.css';
-import Phaser, { Physics } from 'phaser';
+import Phaser from 'phaser';
 const sizes={
     width:500,
     height:500
@@ -7,11 +7,14 @@ const sizes={
 
 const speedDown=250
 
+const gameCanvas = document.getElementById("gameCanvas");
 const gameStartDiv = document.querySelector("#gameStartDiv")
 const gameStartBtn = document.querySelector("#gameStartBtn")
 const gameEndDiv = document.querySelector("#gameEndDiv")
 const gameWinLoseSpan = document.querySelector("#gameWinLoseSpan")
 const gameEndScoreSpan = document.querySelector("#gameEndScoreSpan")
+const touchBtnLeft = document.querySelector("#touchBtnLeft")
+const touchBtnRight = document.querySelector("#touchBtnRight")
 
 class GameScene extends Phaser.Scene{
     constructor(){
@@ -28,6 +31,8 @@ class GameScene extends Phaser.Scene{
         this.coinMusic;
         this.bgMusic;
         this.emitter;
+        this.touchLeft=false;
+        this.touchRight=false;
     }
     preload(){
         this.load.image("bg","/assets/bg.png");
@@ -62,6 +67,19 @@ class GameScene extends Phaser.Scene{
         this.physics.add.overlap(this.target,this.player,this.targetHit,null,this);
         this.cursor=this.input.keyboard.createCursorKeys();
 
+        const bindTouch=(down,el)=>{
+            if(!el)return;
+            const set=(v)=>(e)=>{
+                e.preventDefault();
+                down(v);
+            };
+            el.addEventListener("pointerdown",set(true),{passive:false});
+            el.addEventListener("pointerup",set(false));
+            el.addEventListener("pointercancel",set(false));
+        };
+        bindTouch((v)=>{this.touchLeft=v},touchBtnLeft);
+        bindTouch((v)=>{this.touchRight=v},touchBtnRight);
+
         this.textScore=this.add.text(sizes.width - 120,10,"Score: 0",{
             fontSize:"20px Arial",
             fill:"#ffffff",
@@ -88,10 +106,11 @@ class GameScene extends Phaser.Scene{
             this.target.setX(this.getRandomX());
         }
 
-        const {left,right}=this.cursor;
-        if(left.isDown){
+        const left=this.cursor.left.isDown||this.touchLeft;
+        const right=this.cursor.right.isDown||this.touchRight;
+        if(left&&!right){
             this.player.setVelocityX(-this.playerSpeed);
-        }else if(right.isDown){
+        }else if(right&&!left){
             this.player.setVelocityX(this.playerSpeed);
         }else{
             this.player.setVelocityX(0);
