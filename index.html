@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Keranjang</title>
   </head>
   <body>
     <header>
-      <p>Keranjang Apel</p>
+      <p>Keranjang Apel | Byatara</p>
     </header>
     <main>
       <div class="game-wrap">
@@ -22,7 +22,7 @@
         <p>Game Over</p>
         <h1>You <span id="gameWinLoseSpan"></span></h1>
         <h1>Final Score: <span id="gameEndScoreSpan"></span></h1>
-        <p>Refresh the page to play again.</p>
+        <button type="button" id="playAgainBtn"><p>Main lagi</p></button>
       </div>
       </div>
       <div id="touchControls" class="touch-controls" aria-label="Kontrol gerak">
@@ -30,9 +30,6 @@
         <button type="button" id="touchBtnRight" class="touch-btn" aria-label="Kanan">▶</button>
       </div>
     </main>
-    <footer>
-      <p>@Byatara</p>
-    </footer>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

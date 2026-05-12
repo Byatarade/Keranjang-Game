@@ -15,6 +15,7 @@ const gameWinLoseSpan = document.querySelector("#gameWinLoseSpan")
 const gameEndScoreSpan = document.querySelector("#gameEndScoreSpan")
 const touchBtnLeft = document.querySelector("#touchBtnLeft")
 const touchBtnRight = document.querySelector("#touchBtnRight")
+const playAgainBtn = document.querySelector("#playAgainBtn")
 
 class GameScene extends Phaser.Scene{
     constructor(){
@@ -105,6 +106,25 @@ class GameScene extends Phaser.Scene{
         this.timedEvent=this.time.delayedCall(30000,this.gameOver,[],this);
         this.spawnAppleAtTop();
     }
+    clearRoundTimer(){
+        if(this.timedEvent){
+            this.time.removeEvent(this.timedEvent);
+            this.timedEvent=undefined;
+        }
+    }
+    restartMatch(){
+        this.clearRoundTimer();
+        this.playing=false;
+        this.points=0;
+        this.touchLeft=false;
+        this.touchRight=false;
+        this.textScore.setText("Score: 0");
+        this.textTime.setText("Remaining Time: 30");
+        this.player.setPosition(0,sizes.height-100);
+        this.player.setVelocity(0,0);
+        this.physics.world.disable(this.target);
+        this.beginPlay();
+    }
     spawnAppleAtTop(){
         this.target.setPosition(this.getRandomX(),0);
         this.physics.world.enableBody(this.target);
@@ -155,13 +175,12 @@ class GameScene extends Phaser.Scene{
         this.textScore.setText(`Score: ${this.points}`);
     }
     gameOver(){
-        this.sys.game.destroy(true);
-        if(this.points >= 10){
-            gameEndScoreSpan.textContent=this.points
-            gameWinLoseSpan.textContent="You Win!"
-        }else{
-            gameWinLoseSpan.textContent="You Lose!"
-        }
+        this.playing=false;
+        this.clearRoundTimer();
+        this.player.setVelocity(0,0);
+        this.physics.world.disable(this.target);
+        gameEndScoreSpan.textContent=this.points;
+        gameWinLoseSpan.textContent=this.points>=10?"You Win!":"You Lose!";
         gameEndDiv.style.display="flex";
     }
 }
@@ -192,3 +211,16 @@ const startGame=()=>{
 };
 gameStartBtn.addEventListener("click",startGame);
 gameStartBtn.addEventListener("touchend",startGame,{passive:true});
+
+const playAgain=()=>{
+    if(!playAgainBtn||gameEndDiv.style.display==="none")return;
+    gameEndDiv.style.display="none";
+    const scene=game.scene.getScene("scene-game");
+    if(scene&&typeof scene.restartMatch==="function"){
+        scene.restartMatch();
+    }
+};
+if(playAgainBtn){
+    playAgainBtn.addEventListener("click",playAgain);
+    playAgainBtn.addEventListener("touchend",playAgain,{passive:true});
+}

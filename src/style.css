@@ -80,9 +80,10 @@ main{
   display:none;
 }
 
-#gameStartBtn{
+#gameStartBtn,
+#playAgainBtn{
     display: inline-block;
-    width: 100px;
+    min-width: 100px;
     padding: 8px 15px;
     margin: 20px 0;
     text-align: center;
@@ -90,11 +91,12 @@ main{
     border-radius: 10px;
 }
 
-#gameStartBtn:hover{
-  background-color: var(--dkClr);
-  border: 0.5px solid var(--liClr);
-  color:var(--liClr);
-  cursor: pointer;
+#gameStartBtn:hover,
+#playAgainBtn:hover{
+    background-color: var(--dkClr);
+    border: 0.5px solid var(--liClr);
+    color:var(--liClr);
+    cursor: pointer;
 }
 
 .touch-controls{
