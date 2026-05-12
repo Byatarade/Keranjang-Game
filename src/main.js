@@ -104,7 +104,14 @@ class GameScene extends Phaser.Scene{
         if(this.playing)return;
         this.playing=true;
         this.timedEvent=this.time.delayedCall(30000,this.gameOver,[],this);
-        this.spawnAppleAtTop();
+        if(this.physics.world.isPaused){
+            this.physics.world.resume();
+        }
+        const spawn=()=>{
+            if(!this.playing)return;
+            this.spawnAppleAtTop();
+        };
+        this.time.delayedCall(0,spawn);
     }
     clearRoundTimer(){
         if(this.timedEvent){
@@ -126,14 +133,24 @@ class GameScene extends Phaser.Scene{
         this.beginPlay();
     }
     spawnAppleAtTop(){
-        this.target.setPosition(this.getRandomX(),0);
+        const x=this.getRandomX();
+        const y=0;
         this.physics.world.enableBody(this.target);
         const b=this.target.body;
         if(b){
-            b.allowGravity=true;
-            b.setVelocity(0,0);
+            b.reset(x,y);
+            b.setAllowGravity(true);
             b.setAcceleration(0,0);
+            b.setVelocity(0,0);
         }
+        this.time.delayedCall(120,()=>{
+            if(!this.playing)return;
+            const body=this.target.body;
+            if(!body||!body.enable)return;
+            if(Math.abs(body.velocity.y)<2){
+                body.setVelocityY(Math.min(160,speedDown*0.65));
+            }
+        });
     }
     appleCatchAllowed(){
         if(!this.playing)return false;
@@ -186,7 +203,7 @@ class GameScene extends Phaser.Scene{
 }
 
 const config = {
-    type:Phaser.WEBGL,
+    type:Phaser.AUTO,
     width:sizes.width,
     height:sizes.height,
     canvas:gameCanvas,
@@ -194,7 +211,7 @@ const config = {
         default:"arcade",
         arcade:{
             gravity:{y:speedDown},
-            debug:true
+            debug:false
         }
     },
     scene:[GameScene]
