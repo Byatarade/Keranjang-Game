@@ -1,38 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Keranjang</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Keranjang Apel | Byatara</title>
   </head>
   <body>
     <header>
-      <p>Keranjang Apel</p>
+      <p>Keranjang Apel | Byatara</p>
     </header>
     <main>
       <div class="game-wrap">
-      <canvas id="gameCanvas"></canvas>
-      <div id="gameStartDiv" class="gameUI">
-        <h1>Keranjang Apel</h1>
-        <p>Kamu Hanya diberi waktu 30 detik untuk mengumpulkan apel!</p>
-        <button id="gameStartBtn"><p>Mulai Game</p></button>
-      </div>
-      <div id="gameEndDiv" class="gameUI">
-        <p>Game Over</p>
-        <h1>You <span id="gameWinLoseSpan"></span></h1>
-        <h1>Final Score: <span id="gameEndScoreSpan"></span></h1>
-        <p>Refresh the page to play again.</p>
-      </div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameStartDiv" class="gameUI">
+          <h1>Keranjang Apel</h1>
+          <p>Kamu hanya diberi waktu <strong>30 detik</strong> untuk mengumpulkan apel!</p>
+          <button id="gameStartBtn"><p>Mulai Game</p></button>
+        </div>
+        <div id="gameEndDiv" class="gameUI">
+          <p class="game-over-label">Game Over</p>
+          <h1><span id="gameWinLoseSpan"></span></h1>
+          <h1>Skor Akhir: <span id="gameEndScoreSpan"></span></h1>
+          <button id="gamePlayAgainBtn" class="play-again-btn"> Main Lagi</button>
+        </div>
       </div>
       <div id="touchControls" class="touch-controls" aria-label="Kontrol gerak">
-        <button type="button" id="touchBtnLeft" class="touch-btn" aria-label="Kiri">◀</button>
-        <button type="button" id="touchBtnRight" class="touch-btn" aria-label="Kanan">▶</button>
+        <button type="button" id="touchBtnLeft" class="touch-btn" aria-label="Kiri">◀ Kiri</button>
+        <button type="button" id="touchBtnRight" class="touch-btn" aria-label="Kanan">Kanan ▶</button>
       </div>
     </main>
-    <footer>
-      <p>@Byatara</p>
-    </footer>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

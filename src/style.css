@@ -20,6 +20,7 @@ body{
   display:flex;
   flex-direction:column;
   min-height:100vh;
+  overflow-x:hidden;
 }
 
 header,footer{
@@ -47,30 +48,54 @@ main{
 }
 
 #gameCanvas{
-  border: 1px solid red;
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   display:block;
   z-index:1;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.1);
 }
+
+/* ───── Game UI overlays (start & end) ───── */
 .gameUI{
-    position:absolute;
-    inset:0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--accClr);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
+  position:absolute;
+  inset:0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #0D0D35 0%, #1a1a4e 50%, #0D0D35 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  border-radius:12px;
+  gap:6px;
+  padding:20px;
 }
 
 .gameUI *{
   text-align: center;
-  margin-top:5px;
+}
+
+.gameUI h1{
+  font-size:clamp(1.2rem, 5vw, 1.8rem);
+  margin-top:4px;
+}
+
+.gameUI p{
+  font-size:clamp(0.85rem, 3.5vw, 1rem);
+  opacity:0.85;
+  line-height:1.5;
+}
+
+.game-over-label{
+  font-size:clamp(0.9rem, 3.5vw, 1.1rem) !important;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  opacity:0.6 !important;
+  margin-bottom:4px;
 }
 
 #gameStartDiv{
@@ -80,29 +105,48 @@ main{
   display:none;
 }
 
-#gameStartBtn{
-    display: inline-block;
-    width: 100px;
-    padding: 8px 15px;
-    margin: 20px 0;
-    text-align: center;
-    font-family: inherit;
-    border-radius: 10px;
-}
-
-#gameStartBtn:hover{
-  background-color: var(--dkClr);
-  border: 0.5px solid var(--liClr);
+/* ───── Shared button base ───── */
+#gameStartBtn,
+.play-again-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 28px;
+  margin-top:18px;
+  font-family:inherit;
+  font-size:clamp(0.9rem, 3.5vw, 1rem);
+  font-weight:600;
+  border-radius:12px;
+  border:2px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.08);
   color:var(--liClr);
-  cursor: pointer;
+  cursor:pointer;
+  transition:all 0.25s ease;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
 }
 
+#gameStartBtn:hover,
+.play-again-btn:hover{
+  background:rgba(255,255,255,0.18);
+  border-color:rgba(255,255,255,0.5);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(13,13,53,0.5);
+}
+
+#gameStartBtn:active,
+.play-again-btn:active{
+  transform:translateY(0);
+  background:rgba(255,255,255,0.12);
+}
+
+/* ───── Touch controls ───── */
 .touch-controls{
   display:none;
   width:100%;
   max-width:500px;
-  gap:12px;
-  padding-top:10px;
+  gap:14px;
+  padding-top:12px;
   justify-content:center;
   align-items:stretch;
   user-select:none;
@@ -111,21 +155,28 @@ main{
 
 .touch-btn{
   flex:1;
-  min-height:52px;
-  font-size:1.35rem;
+  min-height:60px;
+  font-size:1.1rem;
+  font-weight:600;
   font-family:inherit;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.35);
-  background:rgba(13,13,53,0.95);
+  letter-spacing:1px;
+  border-radius:14px;
+  border:1.5px solid rgba(255,255,255,0.25);
+  background:linear-gradient(180deg, rgba(13,13,53,0.95) 0%, rgba(24,24,24,0.95) 100%);
   color:var(--liClr);
   touch-action:manipulation;
   cursor:pointer;
+  transition:all 0.15s ease;
+  -webkit-tap-highlight-color:transparent;
 }
 
 .touch-btn:active{
-  background:var(--dkClr);
+  background:linear-gradient(180deg, rgba(60,60,130,0.95) 0%, rgba(40,40,80,0.95) 100%);
+  border-color:rgba(255,255,255,0.5);
+  transform:scale(0.96);
 }
 
+/* Show touch controls on touch devices or small screens */
 @media (pointer: coarse), (max-width: 768px){
   .touch-controls{
     display:flex;
