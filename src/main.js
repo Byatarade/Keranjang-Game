@@ -6,7 +6,7 @@ const sizes = {
     height: 500
 };
 
-const speedDown = 250;
+const speedDown = 450;
 
 const gameCanvas = document.getElementById("gameCanvas");
 const gameStartDiv = document.querySelector("#gameStartDiv");
@@ -182,9 +182,9 @@ class GameScene extends Phaser.Scene {
         /* update UI */
         gameEndScoreSpan.textContent = this.points;
         if (this.points >= 10) {
-            gameWinLoseSpan.textContent = "Kamu Menang! 🎉";
+            gameWinLoseSpan.textContent = "Kamu Menang!";
         } else {
-            gameWinLoseSpan.textContent = "Kamu Kalah 😢";
+            gameWinLoseSpan.textContent = "Kamu Kalah";
         }
         gameEndDiv.style.display = "flex";
     }
